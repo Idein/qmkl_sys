@@ -1,0 +1,27 @@
+version: '2'
+
+services:
+  libqmkl: &libqmkl-env
+    image: idein/cross-librpigrafx2:latest
+    volumes:
+      - /home/idein/cross/usr/armv6-rpi-linux-gnueabihf
+
+  qmkl-sys: &build-env
+    image: idein/cross-rpi-rust:latest
+    environment:
+      C_INCLUDE_PATH: '/usr/include/clang/3.9.1/include:/home/idein/cross/usr/armv6-rpi-linux-gnueabihf/include'
+    volumes:
+      - .:/work
+      - cargo-cache:/home/idein/.cargo
+    volumes_from:
+      - libqmkl
+    working_dir: /work
+
+  build-qmkl-sys:
+    << : *build-env
+    command: |
+      cargo build --target=arm-unknown-linux-gnueabihf
+
+volumes:
+  cargo-cache:
+
