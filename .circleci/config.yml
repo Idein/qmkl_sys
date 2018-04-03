@@ -1,0 +1,50 @@
+version: 2
+
+build_env: &build_env
+  working_directory: /tmp/cross-rpi
+  docker:
+    - image: idein/cross-rpi-rust:latest
+  environment:
+    C_INCLUDE_PATH: '/usr/include/clang/3.9.1/include:/home/idein/cross/usr/armv6-rpi-linux-gnueabihf/include'
+
+jobs:
+  install_libqmkl:
+    working_directory: /tmp/cross-rpi
+    docker:
+      - image: idein/cross-librpigrafx2:latest
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PASSWORD
+    steps:
+      - persist_to_workspace:
+          root: /home/idein/cross/usr
+          paths:
+            - armv6-rpi-linux-gnueabihf
+
+  build:
+    <<: *build_env
+    steps:
+      - attach_workspace:
+          at: /home/idein/cross/usr
+      - checkout
+      - run: touch Cargo.toml Cargo.lock && cat Cargo.toml Cargo.lock > /tmp/concat-cargo.toml
+      - run: rustc --version >> /tmp/concat-cargo.toml
+      - restore_cache:
+          key: cache-cargo-target-{{ checksum "/tmp/concat-cargo.toml" }}
+      - run: |
+          cargo build --target=arm-unknown-linux-gnueabihf
+      - save_cache:
+          key: cache-cargo-target-{{ checksum "/tmp/concat-cargo.toml" }}
+          paths:
+            - ~/.cargo/registry/
+            - target/debug
+ 
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - install_libqmkl
+      - build:
+          requires:
+            - install_libqmkl
+
