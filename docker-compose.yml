@@ -20,7 +20,11 @@ services:
   build-qmkl-sys:
     << : *build-env
     command: |
-      cargo build --target=arm-unknown-linux-gnueabihf
+      bash -c "
+        sudo dpkg --add-architecture armhf
+        sudo apt-get update -y && sudo apt-get install -y libc6-dev:armhf
+        cargo build --target=arm-unknown-linux-gnueabihf
+      "
 
 volumes:
   cargo-cache:
