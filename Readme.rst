@@ -12,5 +12,13 @@ Requirements
 - qmkl
 
 
+Build
+----------------------------------------------------------------
+
+.. code-block:: shell
+
+    $ docker-compose run --rm build-qmkl-sys
+
+
 .. _qmkl: http://github.com/Idein/qmkl
 
