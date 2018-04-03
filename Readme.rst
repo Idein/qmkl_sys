@@ -8,7 +8,6 @@ This library provides a thin Rust interface to `qmkl`_ via the Foreign Function 
 Requirements
 ----------------------------------------------------------------
 
-- pkg-config
 - libclang
 - qmkl
 
