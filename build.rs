@@ -1,10 +1,24 @@
 extern crate bindgen;
+extern crate pkg_config;
 
 use std::env;
 use std::path::{Path, PathBuf};
 
 fn main() {
-    println!("cargo:rustc-link-lib=qmkl");
+    let qmkl = pkg_config::probe_library("qmkl").unwrap();
+
+    // Path to directories of C header
+    let include_dirs: Vec<PathBuf> = vec![
+        Path::new(&env::var("LIBCLANG_INCLUDE_PATH")
+            .expect("LIBCLANG_INCLUDE_PATH like: /usr/lib/llvm-3.9/lib/clang/3.9.1/include"))
+            .into(),
+    ];
+
+    let include_args: Vec<_> = include_dirs
+        .iter()
+        .chain(qmkl.include_paths.iter())
+        .flat_map(|path| vec!["-I", path.to_str().unwrap()])
+        .collect();
 
     // The bindgen::Builder is the main entry point
     // to bindgen, and lets you build up options for
@@ -13,6 +27,7 @@ fn main() {
         // The input header we would like to generate
         // bindings for.
         .header("wrapper.h")
+        .clang_args(&include_args)
         // Finish the builder and generate the bindings.
         .generate()
         // Unwrap the Result and panic on failure.
