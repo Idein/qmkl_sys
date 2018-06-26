@@ -10,6 +10,7 @@ services:
     image: idein/cross-rpi-rust:latest
     environment:
       LIBCLANG_INCLUDE_PATH: '/usr/include/clang/3.9.1/include'
+      PKG_CONFIG_PATH: '/opt/vc/lib/pkgconfig:/home/idein/cross/usr/armv6-rpi-linux-gnueabihf/lib/pkgconfig'
     volumes:
       - .:/work
       - cargo-cache:/home/idein/.cargo
