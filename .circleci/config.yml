@@ -5,7 +5,8 @@ build_env: &build_env
   docker:
     - image: idein/cross-rpi-rust:latest
   environment:
-    C_INCLUDE_PATH: '/usr/include/clang/3.9.1/include:/home/idein/cross/usr/armv6-rpi-linux-gnueabihf/include'
+    LIBCLANG_INCLUDE_PATH: '/usr/include/clang/3.9.1/include'
+    PKG_CONFIG_PATH: '/opt/vc/lib/pkgconfig:/home/idein/cross/usr/armv6-rpi-linux-gnueabihf/lib/pkgconfig'
 
 jobs:
   install_libqmkl:
